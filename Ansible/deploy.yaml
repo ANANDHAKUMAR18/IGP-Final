@@ -1,9 +1,6 @@
 ---
 - name: Deploy ABC Technologies Project
   hosts: localhost
-  collections:
-    - community.docker
-    - kubernetes.core
   become: true
   become_method: sudo
   become_user: azureuser
@@ -26,43 +23,5 @@
         ports:
           - "7000:8080" 
         restart_policy: always
-    - name: Create a Deployment
-      k8s:
-        state: present
-        definition:
-          apiVersion: apps/v1
-          kind: Deployment
-          metadata:
-            name: abc-tech-kubernetes-deployment
-          spec:
-            replicas: 3
-            selector: 
-              matchLabels:
-                app: {{LABEL}}
-            template:
-                metadata:
-                  labels:
-                    app: {{LABEL}}
-                spec:
-                  containers:
-                    - name: abc-container
-                      image: {{docker_username}}/{{docker_image_name}}:{{docker_image_tag}}
-                      ports:
-                      - containerPort: 8080
-    - name: Create a Service
-      k8s:
-        state: present
-        definition:
-          apiVersion: v1
-          kind: Service
-          metadata:
-            name: abc-loadbalancerservice
-          spec:
-            selector:
-              app: {{LABEL}}
-            ports:
-            - protocol: TCP
-              port: 5000
-              targetPort: 7000
-            type: LoadBalancer
+   
 
