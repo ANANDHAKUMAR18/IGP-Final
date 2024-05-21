@@ -1,6 +1,6 @@
 ---
 - name: Deploy ABC Technologies Project
-  hosts: 172.208.76.120
+  hosts: localhost
   collections:
         - community.docker
         - kubernetes.core
