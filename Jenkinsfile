@@ -10,7 +10,7 @@ pipeline {
         ANSIBLE_PLAYBOOK_PATH = 'Ansible/deploy.yaml'
         DYNAMIC_PLAYBOOK_PATH = 'dynamic_playbook.yaml'
         K8S_DEPLOYMENT_FILE= 'Kubernetes/deployment.yaml'
-        SERVICE_YAML='Kubernetes/service.yaml'
+        SERVICE_YAML='Kubernetes/Service.yaml'
         LABEL='abc-app' 
         
     }
