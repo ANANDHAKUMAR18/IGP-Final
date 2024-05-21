@@ -1,0 +1,52 @@
+---
+- name: Deploy ABC Technologies Project
+  hosts: localhost
+  collections:
+        - community.docker
+        - kubernetes.core
+  become: true
+  become_method: sudo
+  become_user: jenkins
+  tasks:
+    - name: Ensure Docker is installed
+      package:
+        name: docker
+        state: present
+
+    - name: Pull our ABC Technologies image
+      docker_image:
+        name: {{docker_username}}/{{docker_image_name}}:{{docker_image_tag}}
+        source: pull
+
+    - name: Run an ABC Technologies Container
+      docker_container:
+        name: test-container
+        image: {{docker_username}}/{{docker_image_name}}:{{docker_image_tag}}
+        state: started
+        ports:
+          - "7000:8080" 
+        restart_policy: always
+    - name: Create a Deployment
+      kubernetes.core.k8s:
+        state: present
+        definition:
+            apiVersion: apps/v1
+            kind: Deployment
+            metadata:
+                name: abc-tech-kubernetes-deployment
+            spec:
+                replicas: 3
+                selector: 
+                matchLabels:
+                    app: {{LABEL}}
+                template:
+                    metadata:
+                        labels:
+                            app: {{LABEL}}
+                    spec:
+                        containers:
+                        - name: abc-container
+                          image: {{docker_username}}/{{docker_image_name}}:{{docker_image_tag}}
+                          ports:
+                          - containerPort: 8080
+             
