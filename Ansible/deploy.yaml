@@ -20,7 +20,7 @@
 
     - name: Run an ABC Technologies Container
       docker_container:
-        name: test-container
+        name: abc-container
         image: {{docker_username}}/{{docker_image_name}}:{{docker_image_tag}}
         state: started
         ports:
@@ -30,23 +30,39 @@
       kubernetes.core.k8s:
         state: present
         definition:
-            apiVersion: apps/v1
-            kind: Deployment
-            metadata:
-                name: abc-tech-kubernetes-deployment
-            spec:
-                replicas: 3
-                selector: 
-                matchLabels:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: abc-tech-kubernetes-deployment
+          spec:
+            replicas: 3
+            selector: 
+              matchLabels:
+                app: {{LABEL}}
+            template:
+                metadata:
+                  labels:
                     app: {{LABEL}}
-                template:
-                    metadata:
-                        labels:
-                            app: {{LABEL}}
-                    spec:
-                        containers:
-                        - name: abc-container
-                          image: {{docker_username}}/{{docker_image_name}}:{{docker_image_tag}}
-                          ports:
-                          - containerPort: 8080
-             
+                spec:
+                  containers:
+                    - name: abc-container
+                      image: {{docker_username}}/{{docker_image_name}}:{{docker_image_tag}}
+                      ports:
+                      - containerPort: 8080
+    - name: Create a Service
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: abc-loadbalancerservice
+          spec:
+            selector:
+              app: {{LABEL}}
+            ports:
+            - protocol: TCP
+              port: 5000
+              targetPort: 7000
+            type: LoadBalancer
+
