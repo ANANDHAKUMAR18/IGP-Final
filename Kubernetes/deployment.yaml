@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test2-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${LABEL}
+  template:
+    metadata:
+      labels:
+        app: ${LABEL}
+    spec:
+      containers:
+        - name: my-container
+          image: ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
+          ports:
+            - containerPort: 8080
