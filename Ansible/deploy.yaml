@@ -1,6 +1,9 @@
 ---
 - name: Deploy ABC Technologies Project
   hosts: localhost
+  collections:
+    - community.docker
+    - kubernetes.core
   become: true
   become_method: sudo
   become_user: root
