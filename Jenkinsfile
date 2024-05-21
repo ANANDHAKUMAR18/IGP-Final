@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    agent {
+        label 'Slave_Node'
+    }
     environment {
         DOCKER_REGISTRY = 'docker.io'
         DOCKER_USERNAME = 'anandhakumarg'
