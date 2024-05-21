@@ -27,7 +27,7 @@
           - "7000:8080" 
         restart_policy: always
     - name: Create a Deployment
-      kubernetes.core.k8s:
+      k8s:
         state: present
         definition:
           apiVersion: apps/v1
