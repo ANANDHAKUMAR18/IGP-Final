@@ -110,14 +110,6 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to Kubernetes') {
-            steps {
-                withCredentials([file(credentialsId: 'kubeconfig_id', variable: 'KUBECONFIG')]) {
-                    sh 'kubectl get nodes'  
-                    sh 'kubectl apply -f processed_deployment.yaml'  
-                    sh 'kubectl apply -f processed_service.yaml'
-                }
-            }
-        }
+        
     }
 }
