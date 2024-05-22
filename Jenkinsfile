@@ -20,7 +20,7 @@ pipeline {
     stages {
         stage('Code') {
             steps {
-                 git branch: 'main', url: 'https://github.com/ANANDHAKUMAR18/Proj2-Purdue.git'
+                 git branch: 'main', url: 'https://github.com/ANANDHAKUMAR18/IGP-Final.git'
             }
         }
         
