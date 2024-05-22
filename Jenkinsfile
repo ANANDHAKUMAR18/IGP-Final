@@ -1,18 +1,16 @@
 pipeline {
-    agent {
-        label 'Slave_Node'
-    }
+    agent any
     environment {
         DOCKER_REGISTRY = 'docker.io'
         DOCKER_USERNAME = 'anandhakumarg'
         DOCKER_IMAGE_NAME = 'anandhsandy'
-        DOCKER_IMAGE_TAG = 'v1'
-        ANSIBLE_PLAYBOOK_PATH = 'Ansible/deploy.yaml'
+        DOCKER_IMAGE_TAG = 'latest'
+        ANSIBLE_PLAYBOOK_PATH = 'ansible/deploy.yaml'
         DYNAMIC_PLAYBOOK_PATH = 'dynamic_playbook.yaml'
         K8S_DEPLOYMENT_FILE= 'Kubernetes/deployment.yaml'
         SERVICE_YAML='Kubernetes/Service.yaml'
         LABEL='abc-app' 
-        
+        GRAFANA_DASHBOARD_URL='http://18.232.180.202:3000/'
     }
     
     tools
@@ -22,7 +20,7 @@ pipeline {
     stages {
         stage('Code') {
             steps {
-                 git branch: 'main', url: 'https://github.com/ANANDHAKUMAR18/IGP-Final.git'
+                 git branch: 'main', url: 'https://github.com/ANANDHAKUMAR18/Proj2-Purdue.git'
             }
         }
         
@@ -58,7 +56,32 @@ pipeline {
                 }
             }
         }
-    
+        stage('Generate Dynamic Playbook') {
+            steps {
+                script {
+                    def playbookTemplate = readFile(env.ANSIBLE_PLAYBOOK_PATH)
+
+                    def dynamicPlaybook = playbookTemplate
+                        .replace('{{docker_username}}', env.DOCKER_USERNAME)
+                        .replace('{{docker_image_name}}', env.DOCKER_IMAGE_NAME)
+                        .replace('{{docker_image_tag}}', env.DOCKER_IMAGE_TAG)
+
+                    writeFile file: env.DYNAMIC_PLAYBOOK_PATH, text: dynamicPlaybook
+                }
+            }
+        }
+
+        stage('Run Ansible Playbook') {
+            steps {
+                withCredentials([string(credentialsId: 'jenkins_sudo_password', variable: 'SUDO_PASSWORD')]) {
+                    script {
+                        // Corrected line with Groovy interpolation
+                       def extraVars = "--extra-vars \"ansible_become_password=${SUDO_PASSWORD}\""
+                        sh " echo ${SUDO_PASSWORD} | sudo -S ansible-playbook -b ${extraVars} ${env.DYNAMIC_PLAYBOOK_PATH}"
+                    }
+                }
+            }
+        }
         stage('Preprocess Kubernetes YAML') {
             steps {
                 script {
@@ -85,17 +108,25 @@ pipeline {
                 }
             }
         }
-         stage('Run Ansible Playbook') {
+        stage('Deploy to Kubernetes') {
             steps {
-                withCredentials([string(credentialsId: 'jenkins_sudo_password', variable: 'SUDO_PASSWORD')]) {
-                    script {
-                        // Corrected line with Groovy interpolation
-                       def extraVars = "--extra-vars \"ansible_become_password=${SUDO_PASSWORD}\""
-                        sh " echo ${SUDO_PASSWORD} | sudo -S ansible-playbook -b ${extraVars} ${env.DYNAMIC_PLAYBOOK_PATH}"
-                    }
+                withCredentials([file(credentialsId: 'kubeconfig_id', variable: 'KUBECONFIG')]) {
+                    sh 'kubectl get nodes'  
+                    sh 'kubectl apply -f processed_deployment.yaml'  
+                    sh 'kubectl apply -f processed_service.yaml'
                 }
             }
         }
+       
+        stage('Monitor with Grafana') {
+            steps {
+                echo "Access Grafana Dashboard at ${GRAFANA_DASHBOARD_URL}"
+            }
+        }
+
+
+        
+        
         
     }
 }
