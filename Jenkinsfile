@@ -58,32 +58,7 @@ pipeline {
                 }
             }
         }
-        stage('Generate Dynamic Playbook') {
-            steps {
-                script {
-                    def playbookTemplate = readFile(env.ANSIBLE_PLAYBOOK_PATH)
-
-                    def dynamicPlaybook = playbookTemplate
-                        .replace('{{docker_username}}', env.DOCKER_USERNAME)
-                        .replace('{{docker_image_name}}', env.DOCKER_IMAGE_NAME)
-                        .replace('{{docker_image_tag}}', env.DOCKER_IMAGE_TAG)
-
-                    writeFile file: env.DYNAMIC_PLAYBOOK_PATH, text: dynamicPlaybook
-                }
-            }
-        }
-
-        stage('Run Ansible Playbook') {
-            steps {
-                withCredentials([string(credentialsId: 'jenkins_sudo_password', variable: 'SUDO_PASSWORD')]) {
-                    script {
-                        // Corrected line with Groovy interpolation
-                       def extraVars = "--extra-vars \"ansible_become_password=${SUDO_PASSWORD}\""
-                        sh " echo ${SUDO_PASSWORD} | sudo -S ansible-playbook -b ${extraVars} ${env.DYNAMIC_PLAYBOOK_PATH}"
-                    }
-                }
-            }
-        }
+    
         stage('Preprocess Kubernetes YAML') {
             steps {
                 script {
@@ -107,6 +82,17 @@ pipeline {
                         .replace('${DOCKER_IMAGE_TAG}', env.DOCKER_IMAGE_TAG)
                         .replace('${LABEL}' , env.LABEL)
                     writeFile file: 'processed_service.yaml', text: processedServiceYaml  
+                }
+            }
+        }
+         stage('Run Ansible Playbook') {
+            steps {
+                withCredentials([string(credentialsId: 'jenkins_sudo_password', variable: 'SUDO_PASSWORD')]) {
+                    script {
+                        // Corrected line with Groovy interpolation
+                       def extraVars = "--extra-vars \"ansible_become_password=${SUDO_PASSWORD}\""
+                        sh " echo ${SUDO_PASSWORD} | sudo -S ansible-playbook -b ${extraVars} ${env.DYNAMIC_PLAYBOOK_PATH}"
+                    }
                 }
             }
         }
