@@ -17,7 +17,7 @@
 
     - name: Run an ABC Technologies Container
       docker_container:
-        name: abc-container
+        name: my-container
         image: {{docker_username}}/{{docker_image_name}}:{{docker_image_tag}}
         state: started
         ports:
