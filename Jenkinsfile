@@ -5,7 +5,7 @@ pipeline {
         DOCKER_USERNAME = 'anandhakumarg'
         DOCKER_IMAGE_NAME = 'anandhsandy'
         DOCKER_IMAGE_TAG = 'latest'
-        ANSIBLE_PLAYBOOK_PATH = 'ansible/deploy.yaml'
+        ANSIBLE_PLAYBOOK_PATH = 'Ansible/deploy.yaml'
         DYNAMIC_PLAYBOOK_PATH = 'dynamic_playbook.yaml'
         K8S_DEPLOYMENT_FILE= 'Kubernetes/deployment.yaml'
         SERVICE_YAML='Kubernetes/Service.yaml'
