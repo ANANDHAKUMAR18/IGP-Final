@@ -3,7 +3,7 @@
   hosts: localhost
   become: true
   become_method: sudo
-  become_user: root
+  become_user: jenkins
   tasks:
     - name: Ensure Docker is installed
       package:
