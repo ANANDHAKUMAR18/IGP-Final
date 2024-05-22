@@ -1,6 +1,8 @@
 ---
 - name: Deploy ABC Technologies Project
   hosts: localhost
+  vars:
+    project_name: "CICD_DOCKER_KUBERNETES"
   become: true
   become_method: sudo
   become_user: jenkins
@@ -9,19 +11,19 @@
       package:
         name: docker
         state: present
+    - name: Enforcing Deployment File 
+      kubernetes.core.k8s:
+        kubeconfig: "{{ lookup('file','~/.kube/config')}}"
+        state: present
+        definition: "{{ lookup('file','/home/azureuser/Jenkins_Workspace_New/workspace/{{ project_name }}/deployment.yaml')}}"
+    - name: Enforcing Service File 
+      kubernetes.core.k8s:
+        kubeconfig: "{{ lookup('file','~/.kube/config')}}"
+        state: present
+        definition: "{{ lookup('file','/home/azureuser/Jenkins_Workspace_New/workspace/{{ project_name }}/Service.yaml')}}"
 
-    - name: Pull our ABC Technologies image
-      docker_image:
-        name: {{docker_username}}/{{docker_image_name}}:{{docker_image_tag}}
-        source: pull
 
-    - name: Run an ABC Technologies Container
-      docker_container:
-        name: my-container
-        image: {{docker_username}}/{{docker_image_name}}:{{docker_image_tag}}
-        state: started
-        ports:
-          - "7000:8080" 
-        restart_policy: always
-   
+
+
+    
 
