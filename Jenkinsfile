@@ -10,7 +10,7 @@ pipeline {
         K8S_DEPLOYMENT_FILE= 'Kubernetes/deployment.yaml'
         SERVICE_YAML='Kubernetes/Service.yaml'
         LABEL='abc-app' 
-        GRAFANA_DASHBOARD_URL='http://:3000/'
+        GRAFANA_DASHBOARD_URL='http://184.72.169.166:3000/'
     }
     
     tools
