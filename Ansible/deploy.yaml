@@ -15,12 +15,12 @@
       kubernetes.core.k8s:
         kubeconfig: "{{ lookup('file','~/.kube/config')}}"
         state: present
-        definition: "{{ lookup('file','/home/azureuser/Jenkins_Workspace_New/workspace/{{ project_name }}/deployment.yaml')}}"
+        definition: "{{ lookup('file','/home/azureuser/Jenkins_Workspace_New/workspace/{{ project_name }}/process_deployment.yaml')}}"
     - name: Enforcing Service File 
       kubernetes.core.k8s:
         kubeconfig: "{{ lookup('file','~/.kube/config')}}"
         state: present
-        definition: "{{ lookup('file','/home/azureuser/Jenkins_Workspace_New/workspace/{{ project_name }}/Service.yaml')}}"
+        definition: "{{ lookup('file','/home/azureuser/Jenkins_Workspace_New/workspace/{{ project_name }}/process_service.yaml')}}"
 
 
 
