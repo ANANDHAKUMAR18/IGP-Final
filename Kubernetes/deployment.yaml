@@ -6,14 +6,14 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ${LABEL}
+      app: nginx
   template:
     metadata:
       labels:
-        app: ${LABEL}
+        app: 
     spec:
       containers:
         - name: my-container
-          image: ${DOCKER_USERNAME}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
+          image: nginx
           ports:
-            - containerPort: 8080
+            - containerPort: 80
