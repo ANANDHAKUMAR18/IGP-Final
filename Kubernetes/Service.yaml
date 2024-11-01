@@ -4,9 +4,9 @@ metadata:
   name: test2-service
 spec:
   selector:
-    app: ${LABEL}
+    app: nginx
   ports:
     - protocol: TCP
       port: 8083
-      targetPort: 8080
+      targetPort: 80
   type: LoadBalancer
